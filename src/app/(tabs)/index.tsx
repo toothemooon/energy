@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-
+import ImagePickerExample from "../components/ImagePicker";
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>hi~</Text>
+      <Text style={styles.text}>hi</Text>
+      <ImagePickerExample></ImagePickerExample>
     </View>
   );
 }
