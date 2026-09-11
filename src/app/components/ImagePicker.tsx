@@ -1,9 +1,25 @@
+import { SaveFormat, useImageManipulator } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Alert, Button, Image, StyleSheet, View } from "react-native";
 
 export default function ImagePickerExample() {
-  const [image, setImage] = useState<string | null>(null);
+  const [imageUri, setImageUri] = useState<string>("");
+  const context = useImageManipulator(imageUri);
+
+  // Photo compress
+  const processImage = async () => {
+    context.resize({
+      height: 1024,
+      width: 1024,
+    });
+    const renderedImage = await context.renderAsync();
+    const result = await renderedImage.saveAsync({
+      format: SaveFormat.JPEG,
+    });
+
+    setImageUri(result.uri);
+  };
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library.
@@ -32,7 +48,7 @@ export default function ImagePickerExample() {
     console.log(result);
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImageUri(result.assets[0].uri);
     }
   };
 
@@ -59,7 +75,8 @@ export default function ImagePickerExample() {
     console.log(result);
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImageUri(result.assets[0].uri);
+      processImage();
     }
   };
 
@@ -67,7 +84,7 @@ export default function ImagePickerExample() {
     <View style={styles.container}>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
       <Button title="Take a photo" onPress={takePhoto} />
-      {image && <Image source={{ uri: image }} style={styles.image} />}
+      {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
     </View>
   );
 }
