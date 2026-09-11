@@ -1,23 +1,32 @@
-import { SaveFormat, useImageManipulator } from "expo-image-manipulator";
+import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Alert, Button, Image, StyleSheet, View } from "react-native";
 
 export default function ImagePickerExample() {
-  const [imageUri, setImageUri] = useState<string>("");
-  const context = useImageManipulator(imageUri);
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
   // Photo compress
-  const compressImage = async () => {
-    context.resize({
-      width: 1024,
-    });
-    const renderedImage = await context.renderAsync();
-    const result = await renderedImage.saveAsync({
-      format: SaveFormat.JPEG,
-    });
 
-    setImageUri(result.uri);
+  const compressImage = async (uri: string) => {
+    if (!uri) return;
+    try {
+      const context = ImageManipulator.manipulate(uri);
+      context.resize({
+        width: 1024,
+      });
+      const renderedImage = await context.renderAsync();
+      const result = await renderedImage.saveAsync({
+        format: SaveFormat.JPEG,
+        compress: 0.8,
+      });
+
+      console.log("压缩完成:", result.uri);
+
+      setImageUri(result.uri);
+    } catch (error) {
+      console.error("图片压缩失败", error);
+    }
   };
 
   const pickImage = async () => {
@@ -38,7 +47,7 @@ export default function ImagePickerExample() {
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -47,7 +56,8 @@ export default function ImagePickerExample() {
     console.log(result);
 
     if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+      setImageUri(result.assets[0].uri); // 短暂看到原图
+      compressImage(result.assets[0].uri);
     }
   };
 
@@ -75,6 +85,7 @@ export default function ImagePickerExample() {
 
     if (!result.canceled) {
       setImageUri(result.assets[0].uri);
+      compressImage(result.assets[0].uri);
     }
   };
 
