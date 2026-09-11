@@ -8,9 +8,8 @@ export default function ImagePickerExample() {
   const context = useImageManipulator(imageUri);
 
   // Photo compress
-  const processImage = async () => {
+  const compressImage = async () => {
     context.resize({
-      height: 1024,
       width: 1024,
     });
     const renderedImage = await context.renderAsync();
@@ -76,7 +75,6 @@ export default function ImagePickerExample() {
 
     if (!result.canceled) {
       setImageUri(result.assets[0].uri);
-      processImage();
     }
   };
 
