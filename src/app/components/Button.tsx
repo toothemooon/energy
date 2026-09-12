@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type Props = {
-  onPress: () => string; // 这是一个函数类型
+  onPress: () => void; // 这是一个函数类型
 };
 export default function Button(prop: Props) {
   return (

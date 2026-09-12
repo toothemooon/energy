@@ -1,12 +1,12 @@
 import Button from "@/app/components/Button";
-import { testConnection } from "@/services/api";
+import { analyzeFood, testConnection } from "@/services/api";
 import { StyleSheet, Text, View } from "react-native";
 import ImagePickerExample from "../components/ImagePicker";
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>hi</Text>
-      <ImagePickerExample></ImagePickerExample>
+      <ImagePickerExample onPress={analyzeFood} />
       <Button onPress={testConnection} />
     </View>
   );

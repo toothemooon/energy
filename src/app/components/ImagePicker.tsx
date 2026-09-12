@@ -3,7 +3,10 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Alert, Button, Image, StyleSheet, View } from "react-native";
 
-export default function ImagePickerExample() {
+type Props = {
+  onPress?: (imageUri: string) => Promise<unknown> | void;
+};
+export default function ImagePickerExample(prop: Props) {
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   // Photo compress
@@ -93,6 +96,19 @@ export default function ImagePickerExample() {
       <Button title="Pick an image from camera roll" onPress={pickImage} />
       <Button title="Take a photo" onPress={takePhoto} />
       {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+      <Button
+        title="test"
+        onPress={() => {
+          console.log("test 按钮被点击");
+          console.log("当前 imageUri:", imageUri);
+          if (imageUri) {
+            console.log("调用 onPress...");
+            prop.onPress?.(imageUri);
+          } else {
+            console.log("imageUri 为空，跳过");
+          }
+        }}
+      ></Button>
     </View>
   );
 }
