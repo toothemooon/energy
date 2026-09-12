@@ -7,7 +7,6 @@ export default function ImagePickerExample() {
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   // Photo compress
-
   const compressImage = async (uri: string) => {
     if (!uri) return;
     try {
