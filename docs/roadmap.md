@@ -8,6 +8,30 @@ CalFast 不是一个完整的营养百科，而是一个"拍照后快速得到�
 
 核心卖点：**无感记录** — 用户只需拍照，CalFast 就帮他完成记录。
 
+## 技术路线
+
+**Expo-first，不是 Expo-only**
+
+```
+CalFast
+│
+├── React Native / Expo（80-90%）
+│   ├── UI
+│   ├── Navigation (Expo Router)
+│   ├── Camera (expo-camera)
+│   ├── Image Manipulation (expo-image-manipulator)
+│   ├── API (fetch)
+│   ├── PocketBase SDK
+│   ├── Analytics
+│   └── Widget UI (expo-widgets)
+│
+└── Native iOS Layer（10-20%）
+    ├── App Intents
+    ├── Siri / Shortcuts
+    ├── Action Button
+    └── LockedCameraCapture
+```
+
 ## 技术栈
 
 | 层 | 选型 | 职责 |
@@ -16,65 +40,78 @@ CalFast 不是一个完整的营养百科，而是一个"拍照后快速得到�
 | 后端 | PocketBase（自定义 API + 数据库） | 匿名认证、AI 路由、数据存储 |
 | 部署 | Railway | PocketBase 托管 |
 | AI | 视觉模型（待选型） | 食物识别 + 能量估算 |
-| 订阅 | Superwall | 付费墙、购买、恢复购买 |
+| Widget | expo-widgets | Home Screen + Lock Screen Widget |
+| 原生 | Swift（少量） | App Intents、Siri、LockedCameraCapture |
+| 订阅 | RevenueCat | 付费墙、购买、恢复购买 |
 
-## 架构流程
+## 阶段划分（6 个阶段）
 
-```
-iOS 小组件（唯一入口）
-    ↓
-App 拍照页面
-    ↓
-压缩图片
-    ↓
-PocketBase 自定义 AI 路由
-    ↓
-视觉模型 API
-    ↓
-返回 energyKcal
-    ↓
-PocketBase 保存 meal_logs 记录
-    ↓
-首页与历史记录
-```
-
-## 阶段划分
-
-### 阶段 1：MVP 最小闭环（11月底）
-核心闭环。验证"拍照 → AI 识别 → 自动保存 → 查看记录"。
+### Phase 1：AI Magic（9/13 - 9/20）
+验证"照片能稳定到达结果页"。
 
 包含：
-- 匿名一键登录（PocketBase Auth）
-- 极简首次引导（3-4 页）
-- 小组件作为唯一拍照入口
-- AI 只返回 energyKcal
-- 能量调整滑条
-- 自动保存记录
+- 拍照/选图
+- 图片压缩
+- 上传到 PocketBase
+- AI 识别返回 energyKcal
+- 显示结果
+
+**Gate 1**：拍一份真实食物 → 手机上传 → AI → CalFast 显示 calories
+
+### Phase 2：Real Tracker（9/21 - 10/5）
+从 AI Demo 变成真正的卡路里追踪器。
+
+包含：
+- AI 结果可编辑/确认
+- 保存饮食记录
 - 今日首页
-- 简单历史记录
-- Superwall 订阅
+- 历史记录
+- 用户引导
+- 匿名登录
 
-### 阶段 2：上线后优化
-- 锁屏相机扩展（LockedCameraCapture）
-- 操作按钮快捷入口
-- 更丰富的食物数据
-- 数据导出
+**Gate 2**：连续一天只用 CalFast：早餐/午餐/晚餐拍照 → 保存 → Today 正确显示
 
-### 阶段 3（远期）
-- 正式账户系统
-- 多设备同步
-- AI 教练
-- 社交功能
+### Phase 3：Quick Track（10/6 - 10/14）
+建立统一的"快速记录"入口。
+
+包含：
+- Deep Link（/scan）
+- Home Screen Widget
+- Lock Screen Widget
+
+### Phase 4：Native（10/15 - 10/21）
+解锁 iOS 系统级入口。
+
+包含：
+- App Intent（TrackFoodIntent）
+- Siri / Shortcuts
+- Back Tap
+- Action Button
+
+### Phase 5：LockedCameraCapture（10/22 - 10/26）
+锁屏直接相机扩展（Stretch Goal）。
+
+如果超过 5 天 → 砍掉 → v1.1
+
+### Phase 6：Monetization（10/27 - 11/2）
+建立收费墙。
+
+包含：
+- RevenueCat 集成
+- App Store IAP
+- Free → Paywall → Pro
+- 免费额度控制
 
 ## 开发原则
 
-- **小步验证**：每完成一步都确保能跑通，再进入下一步
+- **Expo-first**：优先使用 Expo 生态，只在必要时用 Swift
+- **小步验证**：每完成一个 Gate 再进入下一阶段
 - **先跑通再优化**：先用假数据、再接真实接口
-- **AI Key 安全**：永远不暴露在客户端，通过 PocketBase 环境变量保存
+- **AI Key 安全**：永远不暴露在客户端
 - **不提前设计**：不需要的功能不写，不提前建表
 
-## 将来扩展
+## 参考资料
 
-- 如果发现首页加载速度或离线体验不够好，再增加 SQLite 作为本地缓存
-- AI 返回格式固定，只保留 energyKcal
-- PocketBase 自定义路由与数据操作解耦
+- [expo-widgets](https://docs.expo.dev/versions/latest/sdk/widgets/)
+- [App Intents](https://developer.apple.com/documentation/appintents)
+- [RevenueCat](https://www.revenuecat.com/docs)
