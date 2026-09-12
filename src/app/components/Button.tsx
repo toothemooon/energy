@@ -1,12 +1,12 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-export default function Button() {
+type Props = {
+  onPress: () => string; // 这是一个函数类型
+};
+export default function Button(prop: Props) {
   return (
     <View style={styles.container}>
-      <Pressable
-        style={styles.button}
-        onPress={() => console.log("Button pressed!")}
-      >
+      <Pressable style={styles.button} onPress={prop.onPress}>
         <Text style={styles.buttonText}>Press Me</Text>
       </Pressable>
     </View>
