@@ -24,6 +24,8 @@ export async function analyzeFood(imageUri: string): Promise<number> {
     body: formData,
   });
 
+  console.log(response.status);
+
   const data = await response.json();
 
   return data.energyKcal;
