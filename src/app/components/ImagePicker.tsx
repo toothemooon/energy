@@ -1,13 +1,15 @@
+import { File } from "expo-file-system";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Alert, Button, Image, StyleSheet, View } from "react-native";
 
 type Props = {
-  onPress?: (imageUri: string) => void | Promise<unknown>;
+  onPress?: (imageDataUrl: any) => void | Promise<unknown>;
 };
 export default function ImagePickerExample(prop: Props) {
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
 
   // Photo compress
   const compressImage = async (uri: string) => {
@@ -23,9 +25,19 @@ export default function ImagePickerExample(prop: Props) {
         compress: 0.8,
       });
 
+      // 读取纯 Base64 内容
+      const file = new File(result.uri);
+      const base64 = await file.base64();
+      // 图片固定为 JPEG，拼接 Data URL
+      const dataUrl = `data:image/jpeg;base64,${base64}`;
+
       console.log("压缩完成:", result.uri);
+      console.log("文件类型: image/jpeg");
+      console.log("Base64 前缀:", dataUrl.slice(0, 30));
+      console.log("Base64 长度:", base64.length);
 
       setImageUri(result.uri);
+      setImageDataUrl(dataUrl);
     } catch (error) {
       console.error("图片压缩失败", error);
     }
@@ -64,7 +76,7 @@ export default function ImagePickerExample(prop: Props) {
     }
   };
 
-  // Take Photp
+  // Take Photo
   const takePhoto = async () => {
     // Camera access always requires the user's permission.
     // Taking a photo also requires a device with a camera. The iOS Simulator
@@ -102,14 +114,14 @@ export default function ImagePickerExample(prop: Props) {
         title="test"
         onPress={() => {
           console.log("test 按钮被点击");
-          console.log("当前 imageUri:", imageUri);
+          console.log("当前 imageDataUrl 是否存在:", Boolean(imageDataUrl));
           if (imageUri) {
             console.log("调用 onPress...");
             if (prop.onPress !== undefined) {
-              prop.onPress(imageUri);
+              prop.onPress(imageDataUrl);
             }
           } else {
-            console.log("imageUri 为空，跳过");
+            console.log("imageDataUrl 为空，跳过");
           }
         }}
       ></Button>
