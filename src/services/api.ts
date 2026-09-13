@@ -1,3 +1,5 @@
+import { File } from "expo-file-system";
+
 export async function testConnection() {
   const response = await fetch("http://localhost:8090/hello/world");
   const data = await response.json();
@@ -5,33 +7,24 @@ export async function testConnection() {
   return data;
 }
 
-export async function analyzeFood(imageUri: string) {
-  console.log("=== analyzeFood 开始 ===");
-  console.log("imageUri:", imageUri);
+export async function analyzeFood(imageUri: string): Promise<number> {
+  const imageFile = new File(imageUri);
+
+  console.log("文件 URI:", imageFile.uri);
+  console.log("文件名:", imageFile.name);
+  console.log("文件类型:", imageFile.type);
+  console.log("文件大小:", imageFile.size);
 
   const formData = new FormData();
-  formData.append("image", {
-    uri: imageUri,
-    type: "image/jpeg",
-    name: "food.jpg",
-  } as any);
 
-  console.log("准备发送请求...");
+  formData.append("image", imageFile, "food.jpg");
 
-  try {
-    const response = await fetch("http://localhost:8090/api/analyze-food", {
-      method: "POST",
-      body: formData,
-    });
+  const response = await fetch("http://localhost:8090/api/analyze-food", {
+    method: "POST",
+    body: formData,
+  });
 
-    console.log("收到响应，状态码:", response.status);
+  const data = await response.json();
 
-    const data = await response.json();
-    console.log("响应数据:", data);
-
-    return data.energyKcal;
-  } catch (error) {
-    console.error("请求失败:", error);
-    throw error;
-  }
+  return data.energyKcal;
 }
