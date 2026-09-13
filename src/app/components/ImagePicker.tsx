@@ -96,8 +96,8 @@ export default function ImagePickerExample(prop: Props) {
   return (
     <View style={styles.container}>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
-      <Button title="Take a photo" onPress={takePhoto} />
       {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+      <Button title="Take a photo" onPress={takePhoto} />
       <Button
         title="test"
         onPress={() => {
