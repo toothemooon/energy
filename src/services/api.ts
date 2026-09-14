@@ -6,7 +6,17 @@ export async function testConnection() {
 }
 
 // 发送请求
-export async function analyzeFood(imageDataUrl: string): Promise<number> {
+export type Analysis = {
+  totalCalories: number;
+  foods: {
+    name: string;
+    calories: number;
+  }[];
+  message: string;
+};
+
+// 5. await 调用
+export async function analyzeFood(imageDataUrl: string): Promise<Analysis> {
   const response = await fetch("http://localhost:8090/api/analyze-food", {
     method: "POST",
     headers: {
@@ -25,5 +35,5 @@ export async function analyzeFood(imageDataUrl: string): Promise<number> {
   console.log(analysis.foods);
   console.log(analysis.message);
 
-  return analysis.totalCalories;
+  return analysis;
 }
