@@ -8,6 +8,7 @@ export default function HomeScreen() {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const handleFetchData = async (imageDataUrl: string) => {
     const result = await analyzeFood(imageDataUrl);
+    // 7. result 为返回的字符串 -> 对象
     setAnalysis(result);
   };
 

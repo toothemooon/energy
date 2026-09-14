@@ -7,11 +7,13 @@ import { Alert, Button, Image, StyleSheet, View } from "react-native";
 type Props = {
   onPress?: (imageDataUrl: any) => void | Promise<unknown>;
 };
+
+// 1. expo SDK Image picker
 export default function ImagePickerExample(prop: Props) {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
 
-  // Photo compress
+  // 2. Photo compress
   const compressImage = async (uri: string) => {
     if (!uri) return;
     try {
@@ -25,7 +27,7 @@ export default function ImagePickerExample(prop: Props) {
         compress: 0.8,
       });
 
-      // 读取纯 Base64 内容
+      // 3. 转换photo格式，读取纯 Base64 内容
       const file = new File(result.uri);
       const base64 = await file.base64();
       // 图片固定为 JPEG，拼接 Data URL
@@ -118,6 +120,7 @@ export default function ImagePickerExample(prop: Props) {
           if (imageUri) {
             console.log("调用 onPress...");
             if (prop.onPress !== undefined) {
+              // 4. calling 传入的函数
               prop.onPress(imageDataUrl);
             }
           } else {
